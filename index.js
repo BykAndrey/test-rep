@@ -19,8 +19,8 @@ const startHandsetdetectionService = async function(requestBodyObj = {}) {
     const userAgent = requestBodyObj["user-agent"] || '';
     const userAgentParser = require('@handsetdetection/apikit')({
         module: 'cloud',
-        username: '62a9d0ccca',
-        secret: 'wtYrWjvZLtMHdJ5k'
+        username: '1fe368766b',
+        secret: 'N4t4cLcGT7T16cpp'
     });
     return new Promise(async (res, rej) => {
         userAgentParser( userAgent, function( error, parsedUA ) {
