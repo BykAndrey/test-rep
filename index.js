@@ -1,66 +1,50 @@
-const Koa = require('koa');
-const Router = require('koa-router');
-const bodyParser = require('koa-bodyparser');
-
-const app = new Koa();
-const router = new Router();
+const app = require('express')();
+const request = require('request');
+const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 80;
-
 app.use(bodyParser());
-app.use(async (ctx, next) => {
-    ctx.set('Access-Control-Allow-Origin', '*');
-    ctx.set('Access-Control-Allow-Headers', 'Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type');
-    ctx.set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
-    await next();
+app.use(async (req, res,next) => {
+    res.set();
+    res.set({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type',
+        'Access-Control-Allow-Methods': 'POST, GET, PUT, DELETE, OPTIONS'
+    });
+     next();
   });
 
-const startHandsetdetectionService = async function(requestBodyObj = {}) {
-    // const userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1';
-    const userAgent = requestBodyObj["user-agent"] || '';
-    const userAgentParser = require('@handsetdetection/apikit')({
-        module: 'cloud',
-        username: '1fe368766b',
-        secret: 'N4t4cLcGT7T16cpp'
-    });
-    return new Promise(async (res, rej) => {
-        userAgentParser( userAgent, function( error, parsedUA ) {
-            if (error) {
-                rej(error)
-            }
-            res(JSON.stringify(parsedUA));
-        });
-    });
-};
-
-router
-    .get('/', async ctx => {
+app.get('/', (req, res) => {
         const dataExample = {
             'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 6_0_1 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A523 Safari/8536.25","x-local-hardwareinfo":"320:568:200:950',
         }
-        ctx.body = 
+        res.send(
             'Server is working. Waiting for your UserAgent Data. \n' +
             'Format JSON: \n' + 
             JSON.stringify(dataExample) +
-            '';
-    })
-    .post('/detectDeviceByUserAgent', async ctx => {
-        // console.log('POST REQUEST', ctx.request)
-        const requestBodyObj = ctx.request.body;
-        const data = await startHandsetdetectionService(requestBodyObj);
-        const dataJSON = JSON.parse(data);
-        // console.log(dataJSON);
-        console.log('data: ',{
-            general_type: dataJSON.general_type,
-            general_platform: dataJSON.general_platform,
-            general_browser: dataJSON.general_browser,
-            display_pixel_ratio: dataJSON.display_pixel_ratio,
-            display_ppi: dataJSON.display_ppi
+            '');
+    });
+app.post('/detectDeviceByUserAgent', (req, res) => {
+
+        // const data = {
+        //         "user-agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0_1 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A523 Safari/8536.25",
+        //         "x-local-hardwareinfo":"320:568:200:0"
+        //     };
+
+        var options = {
+            uri: 'https://api.handsetdetection.com/apiv4/device/detect.json',
+            method: 'POST',
+            auth: {
+                user: '62a9d0ccca',
+                pass: 'wtYrWjvZLtMHdJ5k',
+                sendImmediately: false
+            },
+            body: JSON.stringify(req.body)
+        };
+        request(options, function(error, response, body){
+            // console.log(error)
+            if(error) return res.send(error);
+            res.send((body) )
         });
-        ctx.body = JSON.parse(data);
+        
     })
-
-app
-    .use(router.routes())
-    .use(router.allowedMethods());
-
 app.listen(PORT);
