@@ -2,7 +2,11 @@ const app = require('express')();
 const request = require('request');
 const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 80;
-// app.use(bodyParser());
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
 app.use(async (req, res,next) => {
     res.set();
     res.set({
@@ -41,13 +45,12 @@ app.post('/detectDeviceByUserAgent', (req, res) => {
             body: JSON.stringify(req.body)
         };
         request(options, function(error, response, body){
-            // console.log(error)
             if(error) return res.send(error);
             const data = JSON.parse(body);
-            console.log(!!data['hd_specs'],data)
             if (data['hd_specs']) return res.send(data['hd_specs']);
+            console.error('has no "hd_specs" in object', data)
             res.status(500).send('Something broke!');
         });
         
     })
-app.listen(PORT);
+app.listen(7878);
