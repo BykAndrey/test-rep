@@ -53,4 +53,6 @@ app.post('/detectDeviceByUserAgent', (req, res) => {
         });
         
     })
-app.listen(7878);
+app.listen(PORT, () => {
+    console.log(`Server work on http://localhost:${PORT}`)
+});
