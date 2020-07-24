@@ -43,7 +43,9 @@ app.post('/detectDeviceByUserAgent', (req, res) => {
         request(options, function(error, response, body){
             // console.log(error)
             if(error) return res.send(error);
-            res.send((body) )
+            const data = JSON.parse(body);
+            if (data['hd_specs']) return res.send(data['hd_specs']);
+            res.status(500).send('Something broke!');
         });
         
     })
