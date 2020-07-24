@@ -2,7 +2,7 @@ const app = require('express')();
 const request = require('request');
 const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 80;
-app.use(bodyParser());
+// app.use(bodyParser());
 app.use(async (req, res,next) => {
     res.set();
     res.set({
